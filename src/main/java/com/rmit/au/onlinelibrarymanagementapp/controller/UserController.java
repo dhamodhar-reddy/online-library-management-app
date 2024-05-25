@@ -9,49 +9,37 @@ import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswo
 import com.rmit.au.onlinelibrarymanagementapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.rmit.au.onlinelibrarymanagementapp.model.User;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/user")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping("login")
+    @PostMapping("/login")
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
-    public Map<String, String> loginUser(@RequestBody User user) throws InvalidUserCredentials {
-        Map<String, String> response = new HashMap<>();
-        var result = userService.loginUser(user);
-        response.put("key", result);
-        return response;
+    public ResponseEntity<Void> loginUser(@RequestBody User user) throws InvalidUserCredentials {
+        userService.loginUser(user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, String> registerUser(@RequestBody User user) throws DuplicateUserException {
-        Map<String, String> response = new HashMap<>();
-        var result = userService.registerUser(user);
-        response.put("key", result);
-        return response;
+    public ResponseEntity<Void> registerUser(@RequestBody User user) throws DuplicateUserException {
+        userService.registerUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("resetPassword")
+    @PostMapping("/resetPassword")
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
-    public Map<String, String> resetPassword(@RequestBody User user) throws InvalidUsernameForPasswordReset {
-        Map<String, String> response = new HashMap<>();
-        var result = userService.resetPassword(user);
-        response.put("key", result);
-        return response;
+    public ResponseEntity<Void> resetPassword(@RequestBody User user) throws InvalidUsernameForPasswordReset {
+        userService.resetPassword(user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

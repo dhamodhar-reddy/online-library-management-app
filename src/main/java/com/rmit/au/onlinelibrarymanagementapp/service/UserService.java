@@ -1,15 +1,12 @@
 package com.rmit.au.onlinelibrarymanagementapp.service;
 
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.rmit.au.onlinelibrarymanagementapp.exception.DuplicateUserException;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswordReset;
 import com.rmit.au.onlinelibrarymanagementapp.model.User;
 import com.rmit.au.onlinelibrarymanagementapp.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -17,42 +14,35 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
 
-    @SneakyThrows
-    public String registerUser(User user) throws DuplicateUserException {
+    public void registerUser(User user) throws DuplicateUserException {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
         if (existingUser.isEmpty()) {
-            user.setPassword(bc.encode(user.getPassword()));
             userRepository.insert(user);
         } else {
-            throw new DuplicateUserException("User already exists!");
+            throw new DuplicateUserException();
         }
-        return "User Registration Successful";
     }
 
-    @SneakyThrows
-    public String resetPassword(User user) throws InvalidUsernameForPasswordReset {
+
+    public void resetPassword(User user) throws InvalidUsernameForPasswordReset {
         var existingUser = userRepository.findUserByEmail(user.email);
         if (existingUser.isPresent()) {
-            existingUser.get().setPassword(bc.encode(user.getPassword()));
             userRepository.save(existingUser.get());
         } else {
-            throw new InvalidUsernameForPasswordReset("Invalid Username for resetting password");
+            throw new InvalidUsernameForPasswordReset();
         }
-        return "Password Reset Successful";
     }
 
-    @SneakyThrows
-    public String loginUser(User user) throws InvalidUserCredentials {
+
+    public void loginUser(User user) throws InvalidUserCredentials {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
         if (existingUser.isPresent()) {
-            if (!bc.matches(user.getPassword(), existingUser.get().getPassword())) {
-                throw new InvalidUserCredentials("Invalid Username or Password");
+            if (!user.getPassword().equals(existingUser.get().getPassword())) {
+                throw new InvalidUserCredentials();
             }
         } else {
-            throw new InvalidUserCredentials("Invalid Username or Password");
+            throw new InvalidUserCredentials();
         }
-        return "User Login Successful";
     }
 }

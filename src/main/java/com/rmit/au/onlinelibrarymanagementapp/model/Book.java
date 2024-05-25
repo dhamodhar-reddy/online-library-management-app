@@ -10,8 +10,7 @@ public class Book {
     public String id;
     public String bookId;
     public String title;
-    public int year;
-    public String author;
+    public byte[] content;
 
     public String getId() {
         return id;
@@ -37,19 +36,7 @@ public class Book {
         this.title = title;
     }
 
-    public int getYear() {
-        return year;
-    }
+    public byte[] getContent() {return content;}
 
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+    public void setContent(byte[] content) {this.content = content;}
 }
