@@ -21,7 +21,10 @@ public class UserController {
     @PostMapping("/login")
     @ResponseBody
     public ResponseEntity<Void> loginUser(@RequestBody User user) throws InvalidUserCredentials {
-        userService.loginUser(user);
+        var isAdmin = userService.loginUser(user);
+        if (isAdmin) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -32,10 +35,10 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/resetPassword")
+    @PostMapping("/forgotPassword")
     @ResponseBody
-    public ResponseEntity<Void> resetPassword(@RequestBody User user) throws InvalidUsernameForPasswordReset {
-        userService.resetPassword(user);
+    public ResponseEntity<Void> forgotPassword(@RequestBody User user) throws InvalidUsernameForPasswordReset {
+        userService.forgotPassword(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
