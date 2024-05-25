@@ -1,18 +1,14 @@
 package com.rmit.au.onlinelibrarymanagementapp.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.rmit.au.onlinelibrarymanagementapp.exception.DuplicateUserException;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswordReset;
+import com.rmit.au.onlinelibrarymanagementapp.model.User;
 import com.rmit.au.onlinelibrarymanagementapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.rmit.au.onlinelibrarymanagementapp.model.User;
 
 @RestController
 @RequestMapping("/user")
