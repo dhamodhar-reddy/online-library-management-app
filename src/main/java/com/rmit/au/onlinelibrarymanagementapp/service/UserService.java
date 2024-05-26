@@ -6,10 +6,12 @@ import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswo
 import com.rmit.au.onlinelibrarymanagementapp.model.User;
 import com.rmit.au.onlinelibrarymanagementapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -17,10 +19,13 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JWTService jwtService;
+
     public void registerUser(User user) throws DuplicateUserException {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
         if (existingUser.isEmpty()) {
-            user.setRole("Non-Admin");
+            user.setRole("USER");
             userRepository.insert(user);
         } else {
             throw new DuplicateUserException();
@@ -37,23 +42,27 @@ public class UserService {
         }
     }
 
-    public Boolean loginUser(User user) throws InvalidUserCredentials {
-        Boolean isAdmin;
+    public ResponseEntity<Map<String, String>> loginUser(User user) throws InvalidUserCredentials {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
         if (existingUser.isPresent()) {
             if (!user.getPassword().equals(existingUser.get().getPassword())) {
                 throw new InvalidUserCredentials();
             }
-            if (existingUser.get().getRole().equals("Non-Admin")) {
-                isAdmin = FALSE;
-            } else if (existingUser.get().getRole().equalsIgnoreCase("admin")) {
-                isAdmin = TRUE;
+            if (existingUser.get().getRole().equals("USER")) {
+                Map<String, String> response = new HashMap<>();
+                response.put("token", jwtService.generateToken(user.getEmail()));
+                response.put("username", existingUser.get().getUsername());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else if (existingUser.get().getRole().equalsIgnoreCase("ADMIN")) {
+                Map<String, String> response = new HashMap<>();
+                response.put("token", jwtService.generateToken(user.getEmail()));
+                response.put("username", existingUser.get().getUsername());
+                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
             } else {
                 throw new InvalidUserCredentials();
             }
         } else {
             throw new InvalidUserCredentials();
         }
-        return isAdmin;
     }
 }

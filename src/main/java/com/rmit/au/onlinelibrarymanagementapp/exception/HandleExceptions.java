@@ -27,4 +27,9 @@ public class HandleExceptions {
     public ResponseEntity<Void> handleInvalidBookInformation() {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleException() {
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
 }

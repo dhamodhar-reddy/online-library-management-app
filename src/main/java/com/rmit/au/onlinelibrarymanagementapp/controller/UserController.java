@@ -4,11 +4,14 @@ import com.rmit.au.onlinelibrarymanagementapp.exception.DuplicateUserException;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswordReset;
 import com.rmit.au.onlinelibrarymanagementapp.model.User;
+import com.rmit.au.onlinelibrarymanagementapp.service.JWTService;
 import com.rmit.au.onlinelibrarymanagementapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -18,14 +21,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JWTService jwtService;
+
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<Void> loginUser(@RequestBody User user) throws InvalidUserCredentials {
-        var isAdmin = userService.loginUser(user);
-        if (isAdmin) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) throws InvalidUserCredentials {
+        return userService.loginUser(user);
     }
 
     @PostMapping("/register")
