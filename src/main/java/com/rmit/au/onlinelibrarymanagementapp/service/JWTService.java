@@ -1,6 +1,6 @@
 package com.rmit.au.onlinelibrarymanagementapp.service;
 
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
+import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
 import com.rmit.au.onlinelibrarymanagementapp.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -45,7 +45,7 @@ public class JWTService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public void validateToken(Map<String, String> headers) throws InvalidUserCredentials {
+    public void validateToken(Map<String, String> headers) throws InvalidJWTException {
         Boolean validToken = Boolean.FALSE;
         String authHeader = headers.get("authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ") && !isTokenExpired(authHeader.substring(7))) {
@@ -56,33 +56,41 @@ public class JWTService {
             }
         }
         if (!validToken) {
-            throw new InvalidUserCredentials();
+            throw new InvalidJWTException();
         }
     }
 
-    public String extractUsername(String token) {
+    private String extractUsername(String token) throws InvalidJWTException {
         return extractClaim(token, Claims::getSubject);
     }
 
-    private Boolean isTokenExpired(String token) {
+    private Boolean isTokenExpired(String token) throws InvalidJWTException {
         return extractExpiration(token).before(new Date());
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    private Date extractExpiration(String token) throws InvalidJWTException {
+        try {
+            return extractClaim(token, Claims::getExpiration);
+        } catch (Exception exception) {
+            throw new InvalidJWTException();
+        }
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws InvalidJWTException {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    private Claims extractAllClaims(String token) throws InvalidJWTException {
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception exception) {
+            throw new InvalidJWTException();
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.rmit.au.onlinelibrarymanagementapp.controller;
 
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidBookInformation;
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
+import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
 import com.rmit.au.onlinelibrarymanagementapp.model.Book;
 import com.rmit.au.onlinelibrarymanagementapp.service.BookService;
 import com.rmit.au.onlinelibrarymanagementapp.service.JWTService;
@@ -26,7 +26,7 @@ public class BookController {
 
     @PostMapping("/addOrUpdateBooks")
     @ResponseBody
-    public ResponseEntity<Void> addOrUpdateBooks(@RequestHeader Map<String, String> headers, @RequestBody List<Book> books) throws InvalidBookInformation, InvalidUserCredentials {
+    public ResponseEntity<Void> addOrUpdateBooks(@RequestHeader Map<String, String> headers, @RequestBody List<Book> books) throws InvalidBookInformation, InvalidJWTException {
         jwtService.validateToken(headers);
         bookService.addOrUpdateBooks(books);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -34,7 +34,7 @@ public class BookController {
 
     @GetMapping("/allBooks")
     @ResponseBody
-    public ResponseEntity<List<Book>> getAllBooks(@RequestHeader Map<String, String> headers) throws InvalidUserCredentials {
+    public ResponseEntity<List<Book>> getAllBooks(@RequestHeader Map<String, String> headers) throws InvalidJWTException {
         jwtService.validateToken(headers);
         var books = bookService.getAllBooks();
         return new ResponseEntity<>(books, HttpStatus.OK);
@@ -42,7 +42,7 @@ public class BookController {
 
     @DeleteMapping("/{bookId}")
     @ResponseBody
-    public ResponseEntity<Void> deleteBook(@RequestHeader Map<String, String> headers, @PathVariable String bookId) throws InvalidBookInformation, InvalidUserCredentials {
+    public ResponseEntity<Void> deleteBook(@RequestHeader Map<String, String> headers, @PathVariable String bookId) throws InvalidBookInformation, InvalidJWTException {
         jwtService.validateToken(headers);
         bookService.deleteBook(bookId);
         return new ResponseEntity<>(HttpStatus.OK);

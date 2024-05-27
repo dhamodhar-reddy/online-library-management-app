@@ -28,8 +28,8 @@ public class HandleExceptions {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleException() {
+    @ExceptionHandler(InvalidJWTException.class)
+    public ResponseEntity<Void> handleInvalidJWTException() {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
