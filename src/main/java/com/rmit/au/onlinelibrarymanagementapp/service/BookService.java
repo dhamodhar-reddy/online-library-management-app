@@ -31,8 +31,12 @@ public class BookService {
         }
     }
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<Book> getAllBooks() throws InvalidBookInformation {
+        try {
+            return bookRepository.findAll();
+        } catch (Exception exception) {
+            throw new InvalidBookInformation();
+        }
     }
 
     public void deleteBook(String bookId) throws InvalidBookInformation {

@@ -34,7 +34,7 @@ public class BookController {
 
     @GetMapping("/allBooks")
     @ResponseBody
-    public ResponseEntity<List<Book>> getAllBooks(@RequestHeader Map<String, String> headers) throws InvalidJWTException {
+    public ResponseEntity<List<Book>> getAllBooks(@RequestHeader Map<String, String> headers) throws InvalidJWTException, InvalidBookInformation {
         jwtService.validateToken(headers);
         var books = bookService.getAllBooks();
         return new ResponseEntity<>(books, HttpStatus.OK);
