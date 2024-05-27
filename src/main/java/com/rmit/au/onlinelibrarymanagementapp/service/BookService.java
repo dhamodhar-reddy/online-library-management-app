@@ -31,10 +31,9 @@ public class BookService {
     }
 
     public void deleteBook(String bookId) throws InvalidBookInformation {
-        var book = bookRepository.findById(bookId);
-        if (book.isPresent()) {
-            bookRepository.deleteBookByBookId(bookId);
-        } else {
+        try {
+            bookRepository.deleteById(bookId);
+        } catch (Exception exception) {
             throw new InvalidBookInformation();
         }
     }
