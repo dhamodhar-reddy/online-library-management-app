@@ -24,11 +24,11 @@ public class BookController {
     @Autowired
     private JWTService jwtService;
 
-    @PostMapping("/addOrUpdateBooks")
+    @PostMapping("/addBook")
     @ResponseBody
-    public ResponseEntity<Void> addOrUpdateBooks(@RequestHeader Map<String, String> headers, @RequestBody List<Book> books) throws InvalidBookInformation, InvalidJWTException {
+    public ResponseEntity<Void> addBook(@RequestHeader Map<String, String> headers, @RequestBody Book book) throws InvalidBookInformation, InvalidJWTException {
         jwtService.validateToken(headers);
-        bookService.addOrUpdateBooks(books);
+        bookService.addBook(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

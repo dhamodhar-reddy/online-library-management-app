@@ -12,7 +12,6 @@ public class Book {
 
     @Id
     public String id;
-    public String bookId;
     public String title;
     public String content;
 

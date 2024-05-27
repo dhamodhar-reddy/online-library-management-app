@@ -14,18 +14,9 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    public void addOrUpdateBooks(List<Book> books) throws InvalidBookInformation {
-        if (!books.isEmpty()) {
-            books.forEach(book -> {
-                var existingBook = bookRepository.findBookByBookId(book.getBookId());
-                if (existingBook.isEmpty()) {
-                    bookRepository.insert(book);
-                } else {
-                    existingBook.get().setTitle(book.getTitle());
-                    existingBook.get().setContent(book.getContent());
-                    bookRepository.save(existingBook.get());
-                }
-            });
+    public void addBook(Book book) throws InvalidBookInformation {
+        if (!book.getTitle().isEmpty() && !book.getContent().isEmpty()) {
+            bookRepository.insert(book);
         } else {
             throw new InvalidBookInformation();
         }
@@ -40,7 +31,7 @@ public class BookService {
     }
 
     public void deleteBook(String bookId) throws InvalidBookInformation {
-        var book = bookRepository.findBookByBookId(bookId);
+        var book = bookRepository.findById(bookId);
         if (book.isPresent()) {
             bookRepository.deleteBookByBookId(bookId);
         } else {
