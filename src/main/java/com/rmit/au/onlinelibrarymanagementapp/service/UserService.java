@@ -57,7 +57,7 @@ public class UserService {
                 Map<String, String> response = new HashMap<>();
                 response.put("token", jwtService.generateToken(user.getEmail()));
                 response.put("username", existingUser.get().getUsername());
-                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
             } else {
                 throw new InvalidUserCredentials();
             }
