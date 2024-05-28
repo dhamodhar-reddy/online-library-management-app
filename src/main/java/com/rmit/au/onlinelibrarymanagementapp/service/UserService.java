@@ -48,7 +48,7 @@ public class UserService {
             if (!user.getPassword().equals(existingUser.get().getPassword())) {
                 throw new InvalidUserCredentials();
             }
-            if (existingUser.get().getRole().equals("USER")) {
+            if (existingUser.get().getRole().equalsIgnoreCase("USER")) {
                 Map<String, String> response = new HashMap<>();
                 response.put("token", jwtService.generateToken(user.getEmail()));
                 response.put("username", existingUser.get().getUsername());
