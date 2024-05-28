@@ -34,7 +34,7 @@ public class UserService {
 
     public void forgotPassword(User user) throws InvalidUsernameForPasswordReset {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
-        if (existingUser.isPresent() && existingUser.get().getRole().equals("Non-Admin")) {
+        if (existingUser.isPresent() && existingUser.get().getRole().equalsIgnoreCase("USER")) {
             existingUser.get().setPassword(user.getPassword());
             userRepository.save(existingUser.get());
         } else {
