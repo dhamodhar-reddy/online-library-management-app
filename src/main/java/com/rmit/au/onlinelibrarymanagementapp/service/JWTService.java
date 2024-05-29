@@ -1,6 +1,7 @@
 package com.rmit.au.onlinelibrarymanagementapp.service;
 
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
+import com.rmit.au.onlinelibrarymanagementapp.model.User;
 import com.rmit.au.onlinelibrarymanagementapp.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -26,15 +27,16 @@ public class JWTService {
     @Autowired
     private UserRepository userRepository;
 
-    public String generateToken(String email) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
+        var key = user.getEmail() + "#" + user.getPassword() + "#" + user.getRole();
+        return createToken(claims, key);
     }
 
-    private String createToken(Map<String, Object> claims, String email) {
+    private String createToken(Map<String, Object> claims, String key) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
+                .setSubject(key)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
@@ -49,9 +51,10 @@ public class JWTService {
         Boolean validToken = Boolean.FALSE;
         String authHeader = headers.get("authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ") && !isTokenExpired(authHeader.substring(7))) {
-            var email = extractUsername(authHeader.substring(7));
-            var user = userRepository.findUserByEmail(email);
-            if (user.isPresent()) {
+            var key = extractUsername(authHeader.substring(7));
+            var keyList = key.split("#");
+            var user = userRepository.findUserByEmail(keyList[0]);
+            if (user.isPresent() && keyList[2].equalsIgnoreCase(user.get().getRole())) {
                 validToken = Boolean.TRUE;
             }
         }

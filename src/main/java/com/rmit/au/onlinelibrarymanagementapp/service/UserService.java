@@ -50,12 +50,12 @@ public class UserService {
             }
             if (existingUser.get().getRole().equalsIgnoreCase("USER")) {
                 Map<String, String> response = new HashMap<>();
-                response.put("token", jwtService.generateToken(user.getEmail()));
+                response.put("token", jwtService.generateToken(existingUser.get()));
                 response.put("username", existingUser.get().getUsername());
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else if (existingUser.get().getRole().equalsIgnoreCase("ADMIN")) {
                 Map<String, String> response = new HashMap<>();
-                response.put("token", jwtService.generateToken(user.getEmail()));
+                response.put("token", jwtService.generateToken(existingUser.get()));
                 response.put("username", existingUser.get().getUsername());
                 return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
             } else {
