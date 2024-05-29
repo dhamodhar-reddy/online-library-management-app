@@ -27,9 +27,13 @@ public class BookController {
     @PostMapping("/addBook")
     @ResponseBody
     public ResponseEntity<Void> addBook(@RequestHeader Map<String, String> headers, @RequestBody Book book) throws InvalidBookInformation, InvalidJWTException {
-        jwtService.validateToken(headers);
-        bookService.addBook(book);
-        return new ResponseEntity<>(HttpStatus.OK);
+        var role = jwtService.validateToken(headers);
+        if (role.equalsIgnoreCase("ADMIN")) {
+            bookService.addBook(book);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @GetMapping("/allBooks")
@@ -43,8 +47,12 @@ public class BookController {
     @DeleteMapping("/{bookId}")
     @ResponseBody
     public ResponseEntity<Void> deleteBook(@RequestHeader Map<String, String> headers, @PathVariable String bookId) throws InvalidBookInformation, InvalidJWTException {
-        jwtService.validateToken(headers);
-        bookService.deleteBook(bookId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        var role = jwtService.validateToken(headers);
+        if (role.equalsIgnoreCase("ADMIN")) {
+            bookService.deleteBook(bookId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 }

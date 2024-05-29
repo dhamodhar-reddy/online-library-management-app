@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,14 +25,14 @@ import java.util.function.Function;
 public class JWTService {
 
     @Value("${spring.jwt.secret.key}")
-    private String SECRET;
+    public String secret;
 
     @Autowired
     private UserRepository userRepository;
 
-    public String generateToken(User user) {
+    public String generateToken(User user) throws InvalidJWTException {
         Map<String, Object> claims = new HashMap<>();
-        var key = user.getEmail() + "#" + user.getPassword() + "#" + user.getRole();
+        var key = encrypt(user.getEmail()) + "#" + user.getRole();
         return createToken(claims, key);
     }
 
@@ -43,24 +46,28 @@ public class JWTService {
     }
 
     private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public void validateToken(Map<String, String> headers) throws InvalidJWTException {
+    public String validateToken(Map<String, String> headers) throws InvalidJWTException {
         Boolean validToken = Boolean.FALSE;
+        String role = "";
         String authHeader = headers.get("authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ") && !isTokenExpired(authHeader.substring(7))) {
             var key = extractUsername(authHeader.substring(7));
             var keyList = key.split("#");
-            var user = userRepository.findUserByEmail(keyList[0]);
-            if (user.isPresent() && keyList[2].equalsIgnoreCase(user.get().getRole())) {
+            var email = decrypt(keyList[0]);
+            role = keyList[1];
+            var user = userRepository.findUserByEmail(email);
+            if (user.isPresent() && keyList[1].equalsIgnoreCase(user.get().getRole())) {
                 validToken = Boolean.TRUE;
             }
         }
         if (!validToken) {
             throw new InvalidJWTException();
         }
+        return role;
     }
 
     private String extractUsername(String token) throws InvalidJWTException {
@@ -95,5 +102,40 @@ public class JWTService {
         } catch (Exception exception) {
             throw new InvalidJWTException();
         }
+    }
+
+    public static String encrypt(String strToEncrypt) throws InvalidJWTException {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(getSecretKeyByteArray(), "AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            byte[] encryptedBytes = cipher.doFinal(strToEncrypt.getBytes());
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        } catch (Exception e) {
+            throw new InvalidJWTException();
+        }
+    }
+
+    public static String decrypt(String strToDecrypt) throws InvalidJWTException {
+
+        try {
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(getSecretKeyByteArray(), "AES");
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+            byte[] decodedBytes = Base64.getDecoder().decode(strToDecrypt);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            return new String(decryptedBytes);
+        } catch (Exception e) {
+            throw new InvalidJWTException();
+        }
+    }
+
+    private static byte[] getSecretKeyByteArray() {
+        return new byte[]{
+                (byte) 0x4B, (byte) 0x65, (byte) 0x79, (byte) 0x30,
+                (byte) 0x70, (byte) 0x5F, (byte) 0x74, (byte) 0x68,
+                (byte) 0x69, (byte) 0x73, (byte) 0x5F, (byte) 0x69,
+                (byte) 0x73, (byte) 0x5F, (byte) 0x61, (byte) 0x5F
+        };
     }
 }

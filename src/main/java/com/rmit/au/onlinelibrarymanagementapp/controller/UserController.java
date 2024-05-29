@@ -1,6 +1,7 @@
 package com.rmit.au.onlinelibrarymanagementapp.controller;
 
 import com.rmit.au.onlinelibrarymanagementapp.exception.DuplicateUserException;
+import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswordReset;
 import com.rmit.au.onlinelibrarymanagementapp.model.User;
@@ -26,7 +27,7 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) throws InvalidUserCredentials {
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) throws InvalidUserCredentials, InvalidJWTException {
         return userService.loginUser(user);
     }
 

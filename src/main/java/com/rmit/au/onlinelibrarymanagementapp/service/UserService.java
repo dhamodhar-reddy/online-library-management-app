@@ -1,6 +1,7 @@
 package com.rmit.au.onlinelibrarymanagementapp.service;
 
 import com.rmit.au.onlinelibrarymanagementapp.exception.DuplicateUserException;
+import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
 import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswordReset;
 import com.rmit.au.onlinelibrarymanagementapp.model.User;
@@ -42,7 +43,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<Map<String, String>> loginUser(User user) throws InvalidUserCredentials {
+    public ResponseEntity<Map<String, String>> loginUser(User user) throws InvalidUserCredentials, InvalidJWTException {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
         if (existingUser.isPresent()) {
             if (!user.getPassword().equals(existingUser.get().getPassword())) {
