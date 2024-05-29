@@ -32,7 +32,7 @@ public class JWTService {
 
     public String generateToken(User user) throws InvalidJWTException {
         Map<String, Object> claims = new HashMap<>();
-        var key = encrypt(user.getEmail()) + "#" + user.getRole();
+        var key = encrypt(user.getEmail()) + user.getRole();
         return createToken(claims, key);
     }
 
@@ -41,7 +41,7 @@ public class JWTService {
                 .setClaims(claims)
                 .setSubject(key)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 300))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
@@ -52,15 +52,20 @@ public class JWTService {
 
     public String validateToken(Map<String, String> headers) throws InvalidJWTException {
         Boolean validToken = Boolean.FALSE;
-        String role = "";
+        String role = null;
         String authHeader = headers.get("authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ") && !isTokenExpired(authHeader.substring(7))) {
-            var key = extractUsername(authHeader.substring(7));
-            var keyList = key.split("#");
-            var email = decrypt(keyList[0]);
-            role = keyList[1];
+            var extractedToken = extractUsername(authHeader.substring(7));
+            String email = null;
+            if (extractedToken.contains("ADMIN")) {
+                email = decrypt(extractedToken.substring(0, extractedToken.length() - 5));
+                role = extractedToken.substring(extractedToken.length() - 5);
+            } else {
+                email = decrypt(extractedToken.substring(0, extractedToken.length() - 4));
+                role = extractedToken.substring(extractedToken.length() - 4);
+            }
             var user = userRepository.findUserByEmail(email);
-            if (user.isPresent() && keyList[1].equalsIgnoreCase(user.get().getRole())) {
+            if (user.isPresent() && role.equalsIgnoreCase(user.get().getRole())) {
                 validToken = Boolean.TRUE;
             }
         }
@@ -117,7 +122,6 @@ public class JWTService {
     }
 
     public static String decrypt(String strToDecrypt) throws InvalidJWTException {
-
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             SecretKeySpec secretKeySpec = new SecretKeySpec(getSecretKeyByteArray(), "AES");
