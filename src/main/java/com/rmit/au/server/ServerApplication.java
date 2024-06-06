@@ -1,13 +1,13 @@
-package com.rmit.au.onlinelibrarymanagementapp;
+package com.rmit.au.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OnlineLibraryManagementAppApplication {
+public class ServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OnlineLibraryManagementAppApplication.class, args);
+		SpringApplication.run(ServerApplication.class, args);
 	}
 
 }
