@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.rmit.au</groupId>
-	<artifactId>online-library-management-app</artifactId>
+	<artifactId>server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>online-library-management-app</name>
 	<description>Demo project for RMIT Online Library Management</description>

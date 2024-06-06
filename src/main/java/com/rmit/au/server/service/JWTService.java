@@ -1,8 +1,8 @@
-package com.rmit.au.onlinelibrarymanagementapp.service;
+package com.rmit.au.server.service;
 
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
-import com.rmit.au.onlinelibrarymanagementapp.model.User;
-import com.rmit.au.onlinelibrarymanagementapp.repository.UserRepository;
+import com.rmit.au.server.exception.InvalidJWTException;
+import com.rmit.au.server.model.User;
+import com.rmit.au.server.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

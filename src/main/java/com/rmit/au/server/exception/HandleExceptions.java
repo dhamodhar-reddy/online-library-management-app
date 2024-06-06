@@ -1,4 +1,4 @@
-package com.rmit.au.onlinelibrarymanagementapp.exception;
+package com.rmit.au.server.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

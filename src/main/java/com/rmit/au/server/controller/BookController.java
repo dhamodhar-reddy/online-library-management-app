@@ -1,10 +1,10 @@
-package com.rmit.au.onlinelibrarymanagementapp.controller;
+package com.rmit.au.server.controller;
 
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidBookInformation;
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
-import com.rmit.au.onlinelibrarymanagementapp.model.Book;
-import com.rmit.au.onlinelibrarymanagementapp.service.BookService;
-import com.rmit.au.onlinelibrarymanagementapp.service.JWTService;
+import com.rmit.au.server.exception.InvalidBookInformation;
+import com.rmit.au.server.exception.InvalidJWTException;
+import com.rmit.au.server.model.Book;
+import com.rmit.au.server.service.BookService;
+import com.rmit.au.server.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

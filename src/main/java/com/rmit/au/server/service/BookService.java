@@ -1,8 +1,8 @@
-package com.rmit.au.onlinelibrarymanagementapp.service;
+package com.rmit.au.server.service;
 
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidBookInformation;
-import com.rmit.au.onlinelibrarymanagementapp.model.Book;
-import com.rmit.au.onlinelibrarymanagementapp.repository.BookRepository;
+import com.rmit.au.server.exception.InvalidBookInformation;
+import com.rmit.au.server.model.Book;
+import com.rmit.au.server.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

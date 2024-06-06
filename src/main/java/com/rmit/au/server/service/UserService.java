@@ -1,11 +1,11 @@
-package com.rmit.au.onlinelibrarymanagementapp.service;
+package com.rmit.au.server.service;
 
-import com.rmit.au.onlinelibrarymanagementapp.exception.DuplicateUserException;
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidJWTException;
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUserCredentials;
-import com.rmit.au.onlinelibrarymanagementapp.exception.InvalidUsernameForPasswordReset;
-import com.rmit.au.onlinelibrarymanagementapp.model.User;
-import com.rmit.au.onlinelibrarymanagementapp.repository.UserRepository;
+import com.rmit.au.server.exception.DuplicateUserException;
+import com.rmit.au.server.exception.InvalidJWTException;
+import com.rmit.au.server.exception.InvalidUserCredentials;
+import com.rmit.au.server.exception.InvalidUsernameForPasswordReset;
+import com.rmit.au.server.model.User;
+import com.rmit.au.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,21 +23,22 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
-    public void registerUser(User user) throws DuplicateUserException {
+    public ResponseEntity<Void> registerUser(User user) throws DuplicateUserException {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
         if (existingUser.isEmpty()) {
-            user.setRole("USER");
             userRepository.insert(user);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             throw new DuplicateUserException();
         }
     }
 
-    public void forgotPassword(User user) throws InvalidUsernameForPasswordReset {
+    public ResponseEntity<Void> forgotPassword(User user) throws InvalidUsernameForPasswordReset {
         var existingUser = userRepository.findUserByEmail(user.getEmail());
-        if (existingUser.isPresent() && existingUser.get().getRole().equalsIgnoreCase("USER")) {
+        if (existingUser.isPresent()) {
             existingUser.get().setPassword(user.getPassword());
             userRepository.save(existingUser.get());
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             throw new InvalidUsernameForPasswordReset();
         }
@@ -48,19 +49,12 @@ public class UserService {
         if (existingUser.isPresent()) {
             if (!user.getPassword().equals(existingUser.get().getPassword())) {
                 throw new InvalidUserCredentials();
-            }
-            if (existingUser.get().getRole().equalsIgnoreCase("USER")) {
-                Map<String, String> response = new HashMap<>();
-                response.put("token", jwtService.generateToken(existingUser.get()));
-                response.put("username", existingUser.get().getUsername());
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else if (existingUser.get().getRole().equalsIgnoreCase("ADMIN")) {
-                Map<String, String> response = new HashMap<>();
-                response.put("token", jwtService.generateToken(existingUser.get()));
-                response.put("username", existingUser.get().getUsername());
-                return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
             } else {
-                throw new InvalidUserCredentials();
+                Map<String, String> response = new HashMap<>();
+                response.put("token", jwtService.generateToken(existingUser.get()));
+                response.put("username", existingUser.get().getUsername());
+                response.put("role", existingUser.get().getRole());
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } else {
             throw new InvalidUserCredentials();

@@ -1,6 +1,6 @@
-package com.rmit.au.onlinelibrarymanagementapp.repository;
+package com.rmit.au.server.repository;
 
-import com.rmit.au.onlinelibrarymanagementapp.model.User;
+import com.rmit.au.server.model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

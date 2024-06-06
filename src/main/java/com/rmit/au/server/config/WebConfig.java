@@ -1,4 +1,4 @@
-package com.rmit.au.onlinelibrarymanagementapp.config;
+package com.rmit.au.server.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
